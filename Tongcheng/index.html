@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for oogle search results) and in your feed.xml site description.
+">
+			<link rel="stylesheet" href="css/common/jquery-weui.css" />
+			<link rel="stylesheet" href="css/demos.css" />
+			<link rel="stylesheet" href="js/common/weui.css" />
+			<link rel="stylesheet" href="css/index.css" />
+			<title>金沙物流园旗下同城配送</title>
+			<style type="text/css">
+				body,
+				html {
+					width: 100%;
+					height: 100%;
+					margin: 0;
+					font-family: "微软雅黑";
+				}
+				
+				#allmap {
+					height: 96.7%;
+					width: 100%;
+					position: absolute;
+				}
+				#r-result,
+				#r-result table {
+					width: 100%;
+				}
+			</style>
+			<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2&ak=6whXXXn4xkA7GN8GGWilcCy7GGqVHRDY"></script>
+			<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+	</head>
+
+	<div class="weui-search-bar" id="searchBar">
+		<img src="images/apps.png"></img>&nbsp;
+		<form class="weui-search-bar__form">
+			<div class="weui-search-bar__box">
+				<i class="weui-icon-search"></i>
+				<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+				<a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+			</div>
+			<label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+	          <i class="weui-icon-search"></i>
+	          <span>搜索</span>
+	        </label>
+		</form>
+		<a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+		&nbsp;
+		<img src="images/message.png"></img><span id="message_num"><sup>2</sup></span>
+	</div>
+	<!--地图-->
+	<div id="allmap"></div>
+	<div id="r-result"></div>
+	<div id="address_div">
+		<div class="weui-cells">
+			<div class="weui-cell">
+				<img class="loction_img" src="images/starting.png" />
+				<div class="weui-cell__bd">
+					<input class="weui-input" id="fromAdd" type="text" placeholder="输入起点">
+					<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:300px;height:600px;position:absolute;left: 650px;top:20px;display: none;"></div>
+				</div>
+			</div>
+		</div>
+		<img class="chack_way" src="images/circuitry.png"></img>
+		<div class="weui-cells">
+			<div class="weui-cell">
+				<img class="loction_img" src="images/end.png" />
+				<div class="weui-cell__bd">
+					<input class="weui-input" id="toAdd" type="text" placeholder="输入目的地">
+					<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:300px;height:600px;position:absolute;left: 650px;top:20px;display: none;"></div>
+				</div>
+			</div>
+		</div>
+		<div id="container"> </div>
+	      <div class="button_sp_area div_btn">
+        <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">按钮</a>
+	    </div>
+	</div>
+	<script type="text/javascript" src="js/common/fastclick.js"></script>
+	<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+	<script>
+		$(function() {
+			FastClick.attach(document.body);
+		})
+	</script>
+	<script type="text/javascript" src="js/jquery-weui.js"></script>
+	<script type="text/javascript">
+		// 百度地图API功能
+		var map = new BMap.Map("allmap");
+		map.centerAndZoom(new BMap.Point(102.651423, 37.930663), 12);
+		map.enableScrollWheelZoom();
+		//三种驾车策略：最少时间，最短距离，避开高速
+		var routePolicy = [BMAP_DRIVING_POLICY_LEAST_TIME, BMAP_DRIVING_POLICY_LEAST_DISTANCE, BMAP_DRIVING_POLICY_AVOID_HIGHWAYS];
+		$(".chack_way").click(function() {
+			var start = $("#fromAdd").val();
+			var end = $("#toAdd").val();
+			map.clearOverlays();
+			/*var i=$("#driving_way select").val();*/
+			search(start, end, routePolicy[1]);
+
+			function search(start, end, route) {
+				var driving = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: true }, policy: route });
+				driving.search(start, end);
+			}
+		});
+		//百度地图建议功能
+		function G(id) {
+			return document.getElementById(id);
+		}
+
+		var from = new BMap.Autocomplete( //建立一个自动完成的对象
+			{
+				"input": "fromAdd",
+				"location": map
+			});
+		from.addEventListener("onhighlight", function(e) { //鼠标放在下拉列表上的事件
+			var str = "";
+			var _value = e.fromitem.value;
+			var value = "";
+			if(e.fromitem.index > -1) {
+				value = _value.province + _value.city + _value.district + _value.street + _value.business;
+			}
+			str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+			value = "";
+			if(e.toitem.index > -1) {
+				_value = e.toitem.value;
+				value = _value.province + _value.city + _value.district + _value.street + _value.business;
+			}
+			str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+			G("searchResultPanel").innerHTML = str;
+		});
+
+		var myValue;
+		from.addEventListener("onconfirm", function(e) { //鼠标点击下拉列表后的事件
+			var _value = e.item.value;
+			myValue = _value.province + _value.city + _value.district + _value.street + _value.business;
+			G("searchResultPanel").innerHTML = "onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+
+			setfromPlace();
+		});
+
+		function setfromPlace() { // 创建地址解析器实例
+			var myGeo = new BMap.Geocoder(); // 将地址解析结果显示在地图上,并调整地图视野
+			myGeo.getPoint(myValue, function(point) {
+				if(point) {
+					map.centerAndZoom(point, 16);
+					map.addOverlay(new BMap.Marker(point));
+					$("#fromlocation").val(point.lat + "," + point.lng);
+					$('#fromAddress').val(myValue);
+				}
+			}, "武威");
+		}
+
+		function G(id) {
+			return document.getElementById(id);
+		}
+		var to = new BMap.Autocomplete( //建立一个自动完成的对象
+			{
+				"input": "toAdd",
+				"location": map
+			});
+
+		to.addEventListener("onhighlight", function(e) { //鼠标放在下拉列表上的事件
+			var str = "";
+			var _value = e.fromitem.value;
+			var value = "";
+			if(e.fromitem.index > -1) {
+				value = _value.province + _value.city + _value.district + _value.street + _value.business;
+			}
+			str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+			value = "";
+			if(e.toitem.index > -1) {
+				_value = e.toitem.value;
+				value = _value.province + _value.city + _value.district + _value.street + _value.business;
+			}
+			str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+			G("searchResultPanel").innerHTML = str;
+		});
+
+		var myValue;
+		to.addEventListener("onconfirm", function(e) { //鼠标点击下拉列表后的事件
+			var _value = e.item.value;
+			myValue = _value.province + _value.city + _value.district + _value.street + _value.business;
+			G("searchResultPanel").innerHTML = "onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+			settoPlace();
+		});
+		function settoPlace() { // 创建地址解析器实例
+			var myGeo = new BMap.Geocoder(); // 将地址解析结果显示在地图上,并调整地图视野
+			myGeo.getPoint(myValue, function(point) {
+				if(point) {
+					map.centerAndZoom(point, 16);
+					map.addOverlay(new BMap.Marker(point));
+					$("#tolocation").val(point.lat + "," + point.lng);
+					$("#toAddress").val(myValue);
+					//getBAIDU_distance();
+				}
+			}, "武威");
+		}
+	</script>
+
+</html>

@@ -1,0 +1,69 @@
+span#message_num {
+	color: red;
+}
+
+div#address_div {
+	    position: relative;
+       margin-top: 110%;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    display: inline-block;
+    padding: 7% 0.32em;
+}
+
+.weui-cells {
+	width: 80%;
+	margin-left: 5%;
+	margin-top: -7%;
+}
+
+.weui-cells_input {
+	position: absolute;
+	width: 80%;
+	margin-left: 10%;
+	margin-top: -1%;
+}
+
+.loction_img {
+	margin-left: -2%;
+}
+
+.weui-input {
+	width: 100%;
+	border: 0;
+	outline: 0;
+	-webkit-appearance: none;
+	background-color: transparent;
+	font-size: x-small;
+	color: inherit;
+	height: unit(@weuiCellLineHeight, em);
+	line-height: @weuiCellLineHeight;
+	// hides the spin-button
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+}
+
+.chack_way {
+	margin-left: 87%;
+    margin-top: -4%;
+}
+
+.div_btn {
+	    margin-left: 26%;
+	margin-top: 5%;
+}
+.weui-btn_mini {
+    display: inline-block;
+    padding: 0 6.32em;
+    line-height: 2.3;
+    font-size: 13px;
+}
+.weui-btn_primary {
+    background-color: #d81e06;
+}
+.anchorBL {
+	display: none;
+}
